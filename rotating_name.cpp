@@ -1,4 +1,7 @@
+#include <cmath>
+#include <iostream>
 
+using namespace std;
 
 /* 
 ASCII characters in order of brightness: .,-~:;=!*#$@
@@ -15,7 +18,7 @@ Y equation:
 float A, B, C;
 
 float calculateX(int i, int j, int k) {
-  return j * sin(A) * sin(B) * cos(C) - k * cos(A) & sin(B) * cos(C) +
+  return j * sin(A) * sin(B) * cos(C) - k * cos(A) * sin(B) * cos(C) +
          j * cos(A) * sin(C) + k * sin(A) * sin(C) + i * cos(B) * cos(C);
 }
 
@@ -27,4 +30,10 @@ float calculateY(int i, int j, int k) {
 
 float calculateZ(int i, int j, int k) {
   return k * cos(A) * cos(B) - j * sin(A) * cos(B) + j * sin(B);
+}
+
+int main() {
+  cout << "`e[2J`[H";
+
+  return 0;
 }
