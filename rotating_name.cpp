@@ -13,6 +13,11 @@ Y equation:
   -y + 2 <= x <= -y + 3 {0 <= y <= 2} {-0.5 <= z <= 0.5} left arm
   y + 2 <= x <= y + 3 {0 <= y <= 2} {-0.5 <= z <= 0.5} right arm
   2 <= x <= 3 {-2 <= y <= 0} {-0.5 <= z <= 0.5} stem
+
+Dimensions:
+-4.5 <= x <= 5
+-2 <= y <= 2
+
 */
 
 float A, B, C;
@@ -32,8 +37,76 @@ float calculateZ(int i, int j, int k) {
   return k * cos(A) * cos(B) - j * sin(A) * cos(B) + j * sin(B);
 }
 
-int main() {
-  cout << "`e[2J`[H";
 
+const int width = 160, height = 40;
+
+int x, y;
+double minX = -4.5, maxX = 5;       // +/- to add buffers along edges
+double minY = -2, maxY = 2;     // ^^
+double xStep = (abs(minX + maxX)) / width;
+double yStep = (abs(minY + maxY)) / height;
+
+
+char buffer[width][height];
+char background = '-';
+
+bool isSurface(double x, double y) {
+  // 'T' bar
+  if((-4.5 <= x && x <= 0.5) && (1 <= y && y <= 2)) {
+    return true;
+  }
+  // 'T' stem
+  else if((-3 <= x && x <= -2) && (-2 <= y && y <= 1)) {
+    return true;
+  }
+  // 'Y' left arm
+  else if(((-y + 2) <= x && x <= (-y + 3)) && (0 <= y && y <= 2)) {
+    return true;
+  }
+  // 'Y' right arm
+  else if(((y + 2) <= x && x <= (y + 3)) && (0 <= y && y <= 2)) {
+    return true;
+  }
+  // 'Y' stem
+  else if((2 <= x && x <= 3) && (-2 <= y && y <= 0)) {
+    return true;
+  }
+  else { return false; }
+}
+
+int main() {
+  int bufferX = 0, bufferY = 0;
+  int charcount = 0;
+
+  x = minX;
+  y = maxY;
+  for(bufferY; bufferY < height; bufferY++) {
+    for(bufferX; bufferX < width; bufferX++) {
+      if(!isSurface(x, y)) {
+        buffer[bufferX][bufferY] = '@';
+        cout << '@';
+      } else {
+        buffer[bufferX][bufferY] = background;
+        cout << background;
+      }
+      x += xStep;
+      charcount++;
+    }
+    x = minX;
+    cout << endl;
+    y -= yStep;
+  }
+  cout << charcount;
+
+  // for(auto& column : buffer) {
+  //   for(auto& row : column) {
+  //     cout << row;
+  //   }
+  //   cout << endl;
+  // }
+
+  //while(1) {
+  //  cout << "\033[2J\033[H";
+  //}
   return 0;
 }
