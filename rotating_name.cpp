@@ -38,75 +38,44 @@ float calculateZ(int i, int j, int k) {
 }
 
 
-const int width = 160, height = 40;
+const int width = 120, height = 30;
+double minX = -4.5 - 0.5, maxX = 5 + 0.5;
+double minY = -2 - 0.5, maxY = 2 + 0.5;
 
-int x, y;
-double minX = -4.5, maxX = 5;       // +/- to add buffers along edges
-double minY = -2, maxY = 2;     // ^^
-double xStep = (abs(minX + maxX)) / width;
-double yStep = (abs(minY + maxY)) / height;
+double xStep = (maxX - minX) / width;
+double yStep = (maxY - minY) / height;
 
-
-char buffer[width][height];
-char background = '-';
+char buffer[height][width];  // Note: row-major order [y][x]
+char background = ' ';
 
 bool isSurface(double x, double y) {
   // 'T' bar
-  if((-4.5 <= x && x <= 0.5) && (1 <= y && y <= 2)) {
-    return true;
-  }
+  if((-4.5 <= x && x <= -0.5) && (1 <= y && y <= 2)) return true;
   // 'T' stem
-  else if((-3 <= x && x <= -2) && (-2 <= y && y <= 1)) {
-    return true;
-  }
+  if((-3 <= x && x <= -2) && (-2 <= y && y <= 1)) return true;
   // 'Y' left arm
-  else if(((-y + 2) <= x && x <= (-y + 3)) && (0 <= y && y <= 2)) {
-    return true;
-  }
+  if(((-y + 2) <= x && x <= (-y + 3)) && (0 <= y && y <= 2)) return true;
   // 'Y' right arm
-  else if(((y + 2) <= x && x <= (y + 3)) && (0 <= y && y <= 2)) {
-    return true;
-  }
+  if(((y + 2) <= x && x <= (y + 3)) && (0 <= y && y <= 2)) return true;
   // 'Y' stem
-  else if((2 <= x && x <= 3) && (-2 <= y && y <= 0)) {
-    return true;
-  }
-  else { return false; }
+  if((2 <= x && x <= 3) && (-2 <= y && y <= 0)) return true;
+  
+  return false;
 }
 
 int main() {
-  int bufferX = 0, bufferY = 0;
-  int charcount = 0;
+  for (int row = 0; row < height; row++) {
+    double y = maxY - row * yStep;
+    for (int col = 0; col < width; col++) {
+      double x = minX + col * xStep;
 
-  x = minX;
-  y = maxY;
-  for(bufferY; bufferY < height; bufferY++) {
-    for(bufferX; bufferX < width; bufferX++) {
-      if(!isSurface(x, y)) {
-        buffer[bufferX][bufferY] = '@';
-        cout << '@';
+      if (isSurface(x, y)) {
+        buffer[row][col] = '@';
       } else {
-        buffer[bufferX][bufferY] = background;
-        cout << background;
+        buffer[row][col] = background;
       }
-      x += xStep;
-      charcount++;
     }
-    x = minX;
     cout << endl;
-    y -= yStep;
   }
-  cout << charcount;
-
-  // for(auto& column : buffer) {
-  //   for(auto& row : column) {
-  //     cout << row;
-  //   }
-  //   cout << endl;
-  // }
-
-  //while(1) {
-  //  cout << "\033[2J\033[H";
-  //}
   return 0;
 }
