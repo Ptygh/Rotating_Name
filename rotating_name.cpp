@@ -1,5 +1,6 @@
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -48,6 +49,11 @@ double yStep = (maxY - minY) / height;
 char buffer[height][width];  // Note: row-major order [y][x]
 char background = ' ';
 
+struct Point3D {
+  double x, y, z;
+};
+vector<Point3D> originalPoints;
+
 bool isSurface(double x, double y) {
   // 'T' bar
   if((-4.5 <= x && x <= -0.5) && (1 <= y && y <= 2)) return true;
@@ -74,6 +80,12 @@ int main() {
       } else {
         buffer[row][col] = background;
       }
+    }
+  }
+
+  for(auto& column : buffer) {
+    for(auto& row : column) {
+      cout << row;
     }
     cout << endl;
   }
