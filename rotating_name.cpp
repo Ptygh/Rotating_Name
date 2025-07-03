@@ -43,10 +43,8 @@ const int width = 120, height = 30;
 double minX = -4.5 - 0.5, maxX = 5 + 0.5;
 double minY = -2 - 0.5, maxY = 2 + 0.5;
 
-double xStep = (maxX - minX) / width;
-double yStep = (maxY - minY) / height;
+double resolution = 1;
 
-char buffer[height][width];  // Note: row-major order [y][x]
 char background = ' ';
 
 struct Point3D {
@@ -54,40 +52,54 @@ struct Point3D {
 };
 vector<Point3D> originalPoints;
 
-bool isSurface(double x, double y) {
-  // 'T' bar
-  if((-4.5 <= x && x <= -0.5) && (1 <= y && y <= 2)) return true;
-  // 'T' stem
-  if((-3 <= x && x <= -2) && (-2 <= y && y <= 1)) return true;
-  // 'Y' left arm
-  if(((-y + 2) <= x && x <= (-y + 3)) && (0 <= y && y <= 2)) return true;
-  // 'Y' right arm
-  if(((y + 2) <= x && x <= (y + 3)) && (0 <= y && y <= 2)) return true;
-  // 'Y' stem
-  if((2 <= x && x <= 3) && (-2 <= y && y <= 0)) return true;
-  
+bool isSurface(double x, double y, double z) {
+  // front and back surfaces of 'T'
+  if(x == -0.5 || x == 0.5) {
+    // 'T' bar
+    if((-4.5 <= y && y <= -0.5) && (1 <= z && z <= 2)) return true;
+    // 'T' stem
+    if((-3 <= y && y <= -2) && (-2 <= z && z <= 1)) return true;
+  } else if(z >= 1) {     // middle surfaces of 'T' top bar
+    if(y == -4.5 || y == -0.5) { return true; }
+  } else {                // middle surfaces of 'T' stem
+    if(y == -3 || y == -2) { return true; }
+  }
+
+  // front and back surfaces of 'Y'
+  if(x == -0.5 || x == 0.5) {
+    // 'Y' left arm
+    if(((-z + 2) <= y && y <= (-z + 3)) && (0 <= z && z <= 2)) return true;
+    // 'Y' right arm
+    if(((z + 2) <= y && y <= (z + 3)) && (0 <= z && z <= 2)) return true;
+    // 'Y' stem
+    if((2 <= y && y <= 3) && (-2 <= z && z <= 0)) return true;
+  } else if(z <= 0) {    // middle surfaces of 'Y' stem 
+    if(y == 2 || y == 3) { return true; }
+  } else {               // middle surfaces of 'Y' arms
+    if(-z + 2 == y || -z + 3 == y) { return true; }
+  }
   return false;
 }
 
 int main() {
-  for (int row = 0; row < height; row++) {
-    double y = maxY - row * yStep;
-    for (int col = 0; col < width; col++) {
-      double x = minX + col * xStep;
+  // for (int row = 0; row < height; row++) {
+  //   double y = maxY - row * yStep;
+  //   for (int col = 0; col < width; col++) {
+  //     double x = minX + col * xStep;
 
-      if (isSurface(x, y)) {
-        buffer[row][col] = '@';
-      } else {
-        buffer[row][col] = background;
-      }
-    }
-  }
+  //     if (isSurface(x, y)) {
+  //       buffer[row][col] = '@';
+  //     } else {
+  //       buffer[row][col] = background;
+  //     }
+  //   }
+  // }
 
-  for(auto& column : buffer) {
-    for(auto& row : column) {
-      cout << row;
-    }
-    cout << endl;
-  }
+  // for(auto& column : buffer) {
+  //   for(auto& row : column) {
+  //     cout << row;
+  //   }
+  //   cout << endl;
+  // }
   return 0;
 }
