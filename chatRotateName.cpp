@@ -65,9 +65,9 @@ void clearScreen() {
 int main() {
     auto basePoints = createLetterT();
     float angle = 0.0f;
+    char screen[HEIGHT][WIDTH];
 
     while (true) {
-        char screen[HEIGHT][WIDTH];
         for (int y = 0; y < HEIGHT; ++y)
             for (int x = 0; x < WIDTH; ++x)
                 screen[y][x] = ' ';
