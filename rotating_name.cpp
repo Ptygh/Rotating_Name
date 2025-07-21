@@ -48,7 +48,6 @@ bool isSurface(float x, float y, float z) {
 }
 
 void generatePoints() {
-  originalPoints.clear();
   for (float x = minX; x <= maxX; x += stepSpeed) {
     for (float y = minY; y <= maxY; y += stepSpeed) {
       for (float z = minZ; z <= maxZ; z += stepSpeed) {
