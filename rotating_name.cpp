@@ -12,14 +12,15 @@ float minY = -2.5f, maxY = 2.5f;
 float minZ = -0.5f, maxZ = 0.5f;
 
 const int WIDTH = 120, HEIGHT = 60;
-float stepSpeed = 0.05f;
-char background = '.';
+float stepSpeed = 0.1f;
+char background = ' ';
 char buffer[HEIGHT][WIDTH];
 float zBuffer[HEIGHT][WIDTH];
 const float LARGE_NUM = 1e9f;
 
 const char* shades = ".,-~:;=!*#$@";
 const int numShades = 12;
+float shadeRange = (maxX - minX) / numShades;
 
 struct Point3D {
   float x, y, z;
@@ -49,10 +50,10 @@ bool isSurface(float x, float y, float z) {
 
 void generatePoints() {
   originalPoints.clear();
-  for (float x = minX; x <= maxX; x += stepSpeed) {
-    for (float y = minY; y <= maxY; y += stepSpeed) {
-      for (float z = minZ; z <= maxZ; z += stepSpeed) {
-        if (isSurface(x, y, z)) originalPoints.push_back({x, y, z});
+  for(float x = minX; x <= maxX; x += stepSpeed) {
+    for(float y = minY; y <= maxY; y += stepSpeed) {
+      for(float z = minZ; z <= maxZ; z += stepSpeed) {
+        if(isSurface(x, y, z)) originalPoints.push_back({x, y, z});
       }
     }
   }
@@ -77,8 +78,8 @@ void rotatePoint(float x, float y, float z, float A, float B, float C, float& ou
 }
 
 Point2D projectPoint(float x, float y, float z) {
-  float distance = 10.0f; // camera distance
-  float scale = 10.0f;   // zoom factor
+  float distance = 20.0f; // camera distance
+  float scale = 7.0f;   // zoom factor
 
   float factor = distance / (z + distance);  // Avoid div by zero
 
@@ -106,9 +107,13 @@ void renderBuffer() {
   }
 }
 
-char brightness(char in) {
+char brightness(float in) {
 
-  return ' ';
+  for(int i = 1; i <= numShades; i++) {
+    if(in <= (minX + (i * shadeRange))) return shades[numShades - i];
+  }
+
+  return '#';
 }
 
 int main() {
@@ -126,16 +131,16 @@ int main() {
       Point2D screen = projectPoint(rotatedX, rotatedY, rotatedZ);
 
       if (screen.x >= 0 && screen.x < WIDTH && screen.y >= 0 && screen.y < HEIGHT) {
-        float depth = rotatedZ + 15.0f;  // same value as `distance` in projectPoint()
+        float depth = rotatedZ + 20.0f;  // same value as `distance` in projectPoint()
         if (depth < zBuffer[screen.y][screen.x]) {
           zBuffer[screen.y][screen.x] = depth;
-          buffer[screen.y][screen.x] = /*brightness(buffer[screen.y][screen.x])*/ '#';
+          buffer[screen.y][screen.x] = brightness(rotatedZ);
         }
       }
     }
+    this_thread::sleep_for(chrono::milliseconds(60));
     clearScreen();
     renderBuffer();
-    this_thread::sleep_for(chrono::milliseconds(30));
   }
   return 0;
 }
